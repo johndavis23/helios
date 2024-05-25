@@ -14,12 +14,12 @@ The following chat commands are available for GMs:
 
 - `!Helios help`: Display the help message.
 - `!Helios justFixIt [true/false](optional)`: Quickly set up or disable all sight-related settings. Optional parameter determines whether or not daylight is on.
-- `!Helios copy`: Copy the sight settings of the selected token.
-- `!Helios paste`: Paste the copied sight settings onto the selected token.
-- `!Helios blind [true/false](optional)`: Remove or grant basic sight to the selected token.
-- `!Helios darkvision [true/false](optional) [distance](optional)`: Set up custom darkvision for the selected token.
-- `!Helios vision [true/false](optional) [distance](optional)`: Set up custom vision for the selected token.
-- `!Helios torch [true/false](optional) [distance](optional)`: Configure light emission similar to a torch for the selected token.
+- `!Helios copy`: Copy the sight settings of the selected tokens.
+- `!Helios paste`: Paste the copied sight settings onto the selected tokens.
+- `!Helios blind [true/false](optional)`: Remove or grant basic sight to the selected tokens.
+- `!Helios darkvision [true/false](optional) [distance](optional)`: Set up custom darkvision for the selected tokens.
+- `!Helios vision [true/false](optional) [distance](optional)`: Set up custom vision for the selected tokens.
+- `!Helios torch [true/false](optional) [distance](optional)`: Configure light emission similar to a torch for the selected tokens.
 - `!Helios day [true/false](optional)`: Control the daylight setting for the page.
 - `!Helios night [true/false](optional)`: Control the nighttime setting for the page.
 - `!Helios inside [true/false](optional)`: Alternative command for controlling daylight, where "inside" means no daylight.
