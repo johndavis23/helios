@@ -25,7 +25,7 @@ The following chat commands are available for GMs:
 - `!Helios inside [true/false](optional)`: Alternative command for controlling daylight, where "inside" means no daylight.
 - `!Helios dynamicLighting [true/false](optional)`: Toggle dynamic lighting for the page of the selected token.
 
-You may also use the shortform !H instead of !Helios for all commands.
+You may also use the shortform `!H` instead of `!Helios` for all commands.
 
 ## Usage
 To use Helios.js, you must be a GM in a virtual tabletop game that supports scripting, such as Roll20. The commands can be entered into the chat, and the script will interact with the selected tokens according to the parameters given.
