@@ -112,8 +112,6 @@ Helios.paste = function(t) {
 }
 
 Helios.help = function(t) {
-    if (i === undefined) i = 0;
-    sendChat("Helios", ""+i++)
     sendChat("Helios", Helios.html);
 }
 const determineNightVisionFromFeatures = (t) => {
