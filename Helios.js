@@ -13,41 +13,61 @@ Helios.shortHand = "!H";
 Helios.attributes = [
     "has_night_vision",
     "has_bright_light_vision",
-    "emits_bright_light",
-    "emits_low_light",
     "bright_light_distance",
     "low_light_distance",
-    "dynamic_lighting_enabled"
+    "dynamic_lighting_enabled",
+    "has_night_vision",
+    "night_vision_distance",
+    "emits_bright_light",
+    "bright_light_distance",
+    "emits_low_light",
+    "dim_light_opacity",
+    "low_light_distance",
+    "light_sensitivity_multiplier",
+    "night_vision_effect",
+    "has_limit_field_of_vision",
+    "limit_field_of_vision_center",
+    "limit_field_of_vision_total",
+    "has_limit_field_of_night_vision",
+    "limit_field_of_night_vision_center",
+    "limit_field_of_night_vision_total",
+    "has_directional_bright_light",
+    "directional_bright_light_center",
+    "directional_bright_light_total",
+    "has_directional_dim_light",
+    "directional_dim_light_center",
+    "directional_dim_light_total",
+    "lightColor"
 ]
 Helios.html = `
     <div style='border: 1px solid black; background-color: #FFFFFF; padding: 3px 3px;'>
         Usage: <br>
-        !Helios help: Display this help message<br>
-        !Helios justFixIt : Use this when you want the game to get on and you will fix it later. Turn on dynamic lighting, daylight, vision, darkvision, and torch for selected token with default distances<br>
-        !Helios justFixIt false : Use this when you want the game to get on and you will fix it later. Daylight is turned off. Turn on dynamic lighting, vision, darkvision, and torch for selected token with default distances. Turn off daylight.<br>
-        !Helios copy : Copy the sight settings of the selected token<br>
-        !Helios paste : Paste the sight settings to the selected token<br>
-        !Helios blind : Remove all sight from selected token<br>
-        !Helios blind false : Give selected token sight and dark vision<br>
-        !Helios darkvision : Give selected token darkvision with a range of 60<br>
-        !Helios darkvision false : Remove darkvision from selected token<br>
-        !Helios darkvision true 60 : Give selected token darkvision with a range of 60<br>
-        !Helios vision : Give selected token vision with a range of 10560<br>
-        !Helios torch : Make selected token generate light with a range of 20 bright, 20 dim<br>
-        !Helios torch false : Make selected token stop generating light<br>
-        !Helios torch true 30 : Make selected token generate light with a range of 30 bright, 30 dim<br>
-        !Helios day : Turn on daylight for selected token and the map they are on<br>
-        !Helios day true : Turn on daylight for page of the selected token<br>
-        !Helios day false : Turn off daylight for page of the selected token<br>
-        !Helios night true : Turn off daylight for page of the selected token<br>
-        !Helios night false : Turn on daylight for page of the selected token<br>
-        !Helios night : Turn off daylight for page of the selected token<br>
-        !Helios inside true : Turn off daylight for page of the selected token<br>
-        !Helios inside false : Turn on daylight for page of the selected token<br>
-        !Helios inside : Turn off daylight for page of the selected token<br>
-        !Helios dynamicLighting : Turn on dynamic lighting for page of the selected token<br>
-        !Helios dynamicLighting false : Turn off dynamic lighting for page of the selected token<br>
-        !Helios dynamicLighting true : Turn on dynamic lighting for page of the selected token<br>
+        <b>!Helios help</b>: Display this help message<br>
+        <b>!Helios justFixIt </b>: Use this when you want the game to get on and you will fix it later. Turn on dynamic lighting, daylight, vision, darkvision, and torch for selected token with default distances<br>
+        <b>!Helios justFixIt false </b>: Use this when you want the game to get on and you will fix it later. Daylight is turned off. Turn on dynamic lighting, vision, darkvision, and torch for selected token with default distances. Turn off daylight.<br>
+        <b>!Helios copy </b>: Copy the sight settings of the selected token<br>
+        <b>!Helios paste </b>: Paste the sight settings to the selected token<br>
+        <b>!Helios blind </b>: Remove all sight from selected token<br>
+        <b>!Helios blind false </b>: Give selected token sight and dark vision<br>
+        <b>!Helios darkvision </b>: Give selected token darkvision with a range of 60<br>
+        <b>!Helios darkvision false </b>: Remove darkvision from selected token<br>
+        <b>!Helios darkvision true 60 </b>: Give selected token darkvision with a range of 60<br>
+        <b>!Helios vision </b>: Give selected token vision with a range of 10560<br>
+        <b>!Helios torch </b>: Make selected token generate light with a range of 20 bright, 20 dim<br>
+        <b>!Helios torch false </b>: Make selected token stop generating light<br>
+        <b>!Helios torch true 30 </b>: Make selected token generate light with a range of 30 bright, 30 dim<br>
+        <b>!Helios day </b>: Turn on daylight for selected token and the map they are on<br>
+        <b>!Helios day true </b>: Turn on daylight for page of the selected token<br>
+        <b>!Helios day false </b>: Turn off daylight for page of the selected token<br>
+        <b>!Helios night true </b>: Turn off daylight for page of the selected token<br>
+        <b>!Helios night false </b>: Turn on daylight for page of the selected token<br>
+        <b>!Helios night </b>: Turn off daylight for page of the selected token<br>
+        <b>!Helios inside true </b>: Turn off daylight for page of the selected token<br>
+        <b>!Helios inside false </b>: Turn on daylight for page of the selected token<br>
+        <b>!Helios inside </b>: Turn off daylight for page of the selected token<br>
+        <b>!Helios dynamicLighting </b>: Turn on dynamic lighting for page of the selected token<br>
+        <b>!Helios dynamicLighting false </b>: Turn off dynamic lighting for page of the selected token<br>
+        <b>!Helios dynamicLighting true </b>: Turn on dynamic lighting for page of the selected token<br>
     </div>
     `
 Helios.blind = function(t, blind = true) {
@@ -112,12 +132,8 @@ Helios.paste = function(t) {
 }
 
 Helios.help = function(t) {
-    sendChat("Helios", Helios.html);
+    sendChat("", Helios.html);
 }
-const determineNightVisionFromFeatures = (t) => {
-
-}
-
 
 const getPageForPlayer = (playerid) => {
     let player = getObj('player',playerid);
