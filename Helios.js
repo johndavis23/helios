@@ -10,6 +10,7 @@ Helios.clipboard = {}
 //Personal Settings
 Helios.command = "!Helios";
 Helios.shortHand = "!H";
+Helios.stringCommands = ["play","stop"]
 Helios.attributes = [
     "has_night_vision",
     "has_bright_light_vision",
@@ -68,6 +69,12 @@ Helios.html = `
         <b>!Helios dynamicLighting </b>: Turn on dynamic lighting for page of the selected token<br>
         <b>!Helios dynamicLighting false </b>: Turn off dynamic lighting for page of the selected token<br>
         <b>!Helios dynamicLighting true </b>: Turn on dynamic lighting for page of the selected token<br>
+        <b>!Helios lewts </b>: Display the GM notes of the character the selected token represents as line separated loot list<br>
+        <b>!Helios image </b>: Display the bio images of the character the selected token represents<br>
+        <b>!Helios pimage </b>: Display the bio images of the character the selected token represents without its name<br>
+        <b>!Helios play SoundName</b>: Play the sound with the name provided<br>
+        <b>!Helios stop SoundName</b>: Stop the sound with the name provided<br>
+        <b>!Helios stopAll </b>: Stop all sounds<br>
     </div>
     `
 Helios.blind = function(t, blind = true) {
@@ -125,6 +132,112 @@ Helios.copy = function(t) {
     })
 }
 
+Helios.lewts = function (t) {
+    let graphic = t;
+    let character = getObj('character', graphic.get('represents'));
+
+    if (character) {
+        let val = graphic.get('gmnotes');
+
+        if (val && val !== 'null' && val.length > 0) {
+            try {
+                val = atob(val);  // Decode Base64 if needed
+            } catch (e) {
+                log("GM Notes are not Base64 encoded.");
+            }
+
+            // Decode HTML entities
+            val = decodeURIComponent(val);
+
+            // Convert breaks into array of separate lines
+            let lines = val.replace(/<\/p>/gi, "\n") // Convert paragraph breaks to new lines
+                .replace(/<br\s*\/?>/gi, "\n") // Convert <br> to new lines
+                .replace(/<\/?[^>]+(>|$)/g, "") // Strip remaining HTML
+                .split(/\r?\n/) // Split into array at newlines
+                .filter(line => line.trim().length > 0); // Remove empty lines
+
+            let whom = character.get('name');
+
+            // Build template with multiple lines in separate fields
+            let chatMessage = `&{template:default}{{name=${whom}}}`;
+            lines.forEach((line, index) => {
+                chatMessage += `{{${index + 1}=${line}}}`;
+            });
+
+            sendChat(whom, chatMessage);
+        } else {
+            log("GM Notes are empty or null.");
+        }
+    }
+};
+
+
+Helios.image = function(t) {
+    let graphic = t
+    let character = getObj('character', graphic.get('represents'))
+    let message = ''
+    if (character) {
+        character.get('bio',  (val) => {
+            if (val && val !== 'null' && val.length > 0) {
+                const decodeUnicode = (str) => str.replace(/%u[0-9a-fA-F]{2,4}/g, (m) => String.fromCharCode(parseInt(m.slice(2), 16)));
+
+                let decodedVal = decodeUnicode(val);
+                let regex = new RegExp(`^g`, 'i');
+
+                let message;
+
+                // Extract images before modifying message
+                let artwork = decodedVal.match(/<img[^>]+src="[^"]+"[^>]*>/g);
+
+                if (artwork && artwork.length > 0) {
+                    message = artwork.join(' '); // Join if multiple images exist
+                } else {
+                    message = 'No artwork exists for this character.';
+                }
+
+                let whom = character.get('name');
+                sendChat(whom, `&{template:default}{{name=${whom}}}{{=${message}}}`);
+            }
+        });
+
+
+    }
+
+
+}
+Helios.pimage = function(t) {
+    let graphic = t
+    let character = getObj('character', graphic.get('represents'))
+    let message = ''
+    if (character) {
+        character.get('bio',  (val) => {
+            if (val && val !== 'null' && val.length > 0) {
+                const decodeUnicode = (str) => str.replace(/%u[0-9a-fA-F]{2,4}/g, (m) => String.fromCharCode(parseInt(m.slice(2), 16)));
+
+                let decodedVal = decodeUnicode(val);
+                let regex = new RegExp(`^g`, 'i');
+
+                let message;
+
+                // Extract images before modifying message
+                let artwork = decodedVal.match(/<img[^>]+src="[^"]+"[^>]*>/g);
+
+                if (artwork && artwork.length > 0) {
+                    message = artwork.join(' '); // Join if multiple images exist
+                } else {
+                    message = 'No artwork exists for this character.';
+                }
+
+                let whom = character.get('name');
+                sendChat("Unknown creature", `&{template:default}{{name="?"}}{{=${message}}}`);
+            }
+        });
+
+
+    }
+
+
+}
 Helios.paste = function(t) {
     Helios.attributes.forEach(a => {
         t.set(a, Helios.clipboard[a]);
@@ -135,6 +248,42 @@ Helios.help = function(t) {
     sendChat("", Helios.html);
 }
 
+Helios.play = function(t, sound) {
+    log("Playing Sound: "+sound)
+    setTrackPlaying(sound, true);
+}
+
+Helios.stop = function(t, sound) {
+    setTrackPlaying(sound, false);
+}
+Helios.stopAll = function(t) {
+    stopAllSounds();
+}
+function varDump(variable, depth = 2, seen = new WeakSet()) {
+    if (variable === null) return "null";
+    if (variable === undefined) return "undefined";
+    if (typeof variable === "function") return "[Function]";
+    if (typeof variable === "symbol") return "[Symbol]";
+
+    if (typeof variable === "object") {
+        if (seen.has(variable)) return "[Circular Reference]";
+        seen.add(variable);
+
+        let indent = "  ".repeat(2 - depth);
+        if (Array.isArray(variable)) {
+            return "[\n" + variable.map(v => indent + varDump(v, depth - 1, seen)).join(",\n") + "\n]";
+        }
+
+        if (depth > 0) {
+            return "{\n" + Object.entries(variable)
+                .map(([key, value]) => `${indent}${key}: ${varDump(value, depth - 1, seen)}`)
+                .join(",\n") + "\n}";
+        }
+        return "[Object]";
+    }
+
+    return String(variable);
+}
 const getPageForPlayer = (playerid) => {
     let player = getObj('player',playerid);
     if(playerIsGM(playerid)){
@@ -162,7 +311,26 @@ const turnOnDaylight = (playerId, on=true) => {
     }
     page.set(field, on);
 }
+const setTrackPlaying = function(name, action= true) {
+    log("Playing Sound: "+name+" Action: "+action)
+    var t = findObjs({type: 'jukeboxtrack', title: name})[0];
+    if(t) {
+        t.set('playing',false);
+        t.set('softstop',false);
+        t.set('playing', action);
+    } else {
+        log("Track not found: "+name);
+    }
+}
 
+const stopAllSounds = function() {
+    var tracks = findObjs({type: 'jukeboxtrack', playing: true});
+    if(tracks) {
+        _.each(tracks, function(sound) {
+            sound.set('playing', false);
+        });
+    }
+}
 on("chat:message", function(msg) {
     const input = msg.content;
     const playerId = msg.playerid;
@@ -172,7 +340,7 @@ on("chat:message", function(msg) {
     const intPart = tokens[3] === undefined ? undefined : parseInt(tokens[3], 10);
 
     if ( (input.indexOf(Helios.command) === 0 || input.indexOf(Helios.shortHand) === 0) && msg.who.indexOf("(GM)") !== -1) {
-        sendChat("Helios", "GM attempting to change sight settings. Let them know if it worked.");
+        //sendChat("Helios", "GM attempting to change sight settings. Let them know if it worked.");
         _.chain(msg.selected)
             .map(function(o){
                 let t = getObj('graphic',o._id);
@@ -181,7 +349,10 @@ on("chat:message", function(msg) {
             })
             .compact()
             .each(function(t) {
-                if(typeof Helios[stringPart] === "function")
+                if(Helios.stringCommands.includes(stringPart)) {
+                    Helios[stringPart](t, tokens.slice(2).join(' '));
+                }
+                else if(typeof Helios[stringPart] === "function")
                 {
                     Helios[stringPart](t, booleanPart, intPart);
                 }
