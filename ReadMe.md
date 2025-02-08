@@ -24,7 +24,13 @@ The following chat commands are available for GMs:
 - `!Helios night [true/false](optional)`: Control the nighttime setting for the page.
 - `!Helios inside [true/false](optional)`: Alternative command for controlling daylight, where "inside" means no daylight.
 - `!Helios dynamicLighting [true/false](optional)`: Toggle dynamic lighting for the page of the selected token.
-
+- `!Helios play [sound]`: Play a sound
+- `!Helios stop [sound]`: Stop a sound
+- `!Helios stopAll`: Stop all sounds
+- `!Helios image`: Post the tokens bio images with his character name
+- `!Helios pimage`: Post the tokens bio images without any name
+- `!Helios lewts`: Post line separated gm notes for selected token
+- `!Helios race`: Attempt to guess dark vision and vision based on the selected tokens characters race
 You may also use the shortform `!H` instead of `!Helios` for all commands.
 
 ## Usage
