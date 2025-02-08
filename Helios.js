@@ -75,6 +75,8 @@ Helios.html = `
         <b>!Helios play SoundName</b>: Play the sound with the name provided<br>
         <b>!Helios stop SoundName</b>: Stop the sound with the name provided<br>
         <b>!Helios stopAll </b>: Stop all sounds<br>
+        <b>!Helios race </b>: Set vision for token based on its characters race. May not take into account sub-race, class features, feats, etc.<br>
+         
     </div>
     `
 Helios.blind = function(t, blind = true) {
@@ -259,6 +261,77 @@ Helios.stop = function(t, sound) {
 Helios.stopAll = function(t) {
     stopAllSounds();
 }
+Helios.race = function(t) {
+    let race = getRaceFromToken(t);
+    let defaultVision = {
+        "has_night_vision": false,
+        "night_vision_distance": 0,
+        "has_bright_light_vision": true,
+        "bright_light_distance": 10560,
+        "dynamic_lighting_enabled": true,
+    }
+    let defaultNightVision = {
+        "has_night_vision": true,
+        "night_vision_distance": 60,
+        "has_bright_light_vision": true,
+        "bright_light_distance": 10560,
+        "dynamic_lighting_enabled": true,
+    }
+    sendChat("Helios", "Setting Vision For Race: " + race);
+    let raceVision = {
+        "Aarakocra":    defaultVision,
+        "Aasimar":      defaultNightVision,
+        "Bugbear":      defaultNightVision,
+        "Centaur":      defaultVision,
+        "Changeling":   defaultVision,
+        "Dragonborn":   defaultVision,
+        "Dwarf":        defaultNightVision,
+        "Elf":          defaultNightVision,
+        "Firbolg":      defaultVision,
+        "Fairy":        defaultVision,
+        "Genasi":       defaultVision,
+        "Gith":         defaultVision,
+        "Gnome":        defaultNightVision,
+        "Goblin":       defaultNightVision,
+        "Goliath":      defaultVision,
+        "Grung":        defaultVision,
+        "Half-Elf":     defaultNightVision,
+        "Halfling":     defaultVision,
+        "Half-Orc":     defaultNightVision,
+        "Human":        defaultVision,
+        "Hobgoblin":    defaultNightVision,
+        "Kenku":        defaultVision,
+        "Kalashtar":    defaultVision,
+        "Kobold":       defaultNightVision,
+        "Leonin":       defaultVision,
+        "Lineages":     defaultVision,
+        "Lizardfolk":   defaultNightVision,
+        "Locathah":     defaultVision,
+        "Loxodon":      defaultVision,
+        "Minotaur":     defaultVision,
+        "Orc":          defaultNightVision,
+        "Owlfolk":      defaultNightVision,
+        "Rabbitfolk":   defaultVision,
+        "Satyr":        defaultVision,
+        "Shifter":      defaultNightVision,
+        "Simic Hybrid": defaultNightVision,
+        "Tabaxi":       defaultNightVision,
+        "Tiefling":     defaultNightVision,
+        "Tortle":       defaultVision,
+        "Triton":       defaultVision,
+        "Vedalken":     defaultVision,
+        "Verdan":       defaultVision,
+        "Warforged":    defaultVision,
+        "Yuan-Ti Pureblood": defaultNightVision
+    }
+    let vision = raceVision[race]
+    if(vision) {
+        Object.keys(vision).forEach(key => {
+            t.set(key, vision[key]);
+        });
+    }
+
+}
 function varDump(variable, depth = 2, seen = new WeakSet()) {
     if (variable === null) return "null";
     if (variable === undefined) return "undefined";
@@ -331,6 +404,17 @@ const stopAllSounds = function() {
         });
     }
 }
+const getRaceFromToken = function(token) {
+    let character = token ? getObj("character", token.get("represents")) : null;
+    let raceAttr = character ? findObjs({ type: "attribute", characterid: character.id, name: "race" })[0] : null;
+
+    if (!raceAttr) {
+        log("Race not found.");
+        return null;
+    }
+    return raceAttr.get("current");
+}
+
 on("chat:message", function(msg) {
     const input = msg.content;
     const playerId = msg.playerid;
